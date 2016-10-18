@@ -71,11 +71,12 @@ public class UuidControl extends JavaPlugin implements Listener {
 		getConfig().set("players." + p.getName(), uuid.toString());
 		map.put(p.getName(), uuid.toString());
 		
-		p.sendMessage(LOGHEAD + "§0Il tuo UUID e' ora protetto");
+		p.sendMessage(LOGHEAD + "§FIl tuo UUID e' ora protetto");
 		
 		saveConfig();
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		
@@ -97,24 +98,30 @@ public class UuidControl extends JavaPlugin implements Listener {
 			else
 				name = args[0];
 			
-			if (map.containsKey(p.getName())) {
+			if (map.containsKey(name)) {
 				
 				p.sendMessage(LOGHEAD + "§7Utente admin protetto");
-				p.sendMessage(LOGHEAD + "§7Username: §0" + name);
-				p.sendMessage(LOGHEAD + "§7UUID: §0" + map.get(name));
+				p.sendMessage(LOGHEAD + "§7Username: §F" + name);
+				p.sendMessage(LOGHEAD + "§7UUID: §F" + map.get(name));
 				
 			} else {
 				
 				p.sendMessage(LOGHEAD + "§7Utente admin non protetto");
-				p.sendMessage(LOGHEAD + "§7Current Username: §0" + name);
+				p.sendMessage(LOGHEAD + "§7Current Username: §F" + name);
 				
-				UUID uuid = Bukkit.getServer().getPlayer(name).getUniqueId();
+				UUID uuid;
+				
+				if (Bukkit.getPlayerExact(name) == null)
+					uuid = Bukkit.getOfflinePlayer(name).getUniqueId();
+				else
+					uuid = Bukkit.getPlayerExact(name).getUniqueId();
+				
 				String uuids = "null";
 				
 				if (uuid != null)
 					uuids = uuid.toString();
 				
-				p.sendMessage(LOGHEAD + "§7Current UUID: §0" + uuids);
+				p.sendMessage(LOGHEAD + "§7Current UUID: §F" + uuids);
 			}
 		}
 		
@@ -130,7 +137,7 @@ public class UuidControl extends JavaPlugin implements Listener {
 			Player player = Bukkit.getServer().getPlayer(name);
 			write(player);
 			
-			p.sendMessage(LOGHEAD + "§0UUID utente protetto");
+			p.sendMessage(LOGHEAD + "§FUUID utente protetto");
 		}
 		
 		return true;
