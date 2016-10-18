@@ -3,6 +3,7 @@ package atlas.numixe;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,11 +14,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class UuidControl extends JavaPlugin implements Listener {
 	
-	HashMap<String, String> map = new HashMap<String, String>();
+	HashMap<String, String> map;
 	public static final String LOGHEAD = "§2UuidControl> ";
 
 	public void onEnable() {
 		
+		map = new HashMap<String, String>();
+		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 		load();
 	}
 	
@@ -36,7 +39,7 @@ public class UuidControl extends JavaPlugin implements Listener {
 		Player p = e.getPlayer();
 		UUID uuid = p.getUniqueId();
 		
-		if (uuid == null)
+		if (uuid == null || !map.containsKey(p.getName()))
 			return;
 		
 		if (!verify(p, uuid))	// se verify restituisce false
@@ -68,6 +71,8 @@ public class UuidControl extends JavaPlugin implements Listener {
 		getConfig().set("players." + p.getName(), uuid.toString());
 		map.put(p.getName(), uuid.toString());
 		
+		p.sendMessage(LOGHEAD + "§0Il tuo UUID e' ora protetto");
+		
 		saveConfig();
 	}
 	
@@ -83,20 +88,27 @@ public class UuidControl extends JavaPlugin implements Listener {
 		
 		Player p = (Player) sender;
 		
-		if (cmd.getName().equalsIgnoreCase("viewuuid)")) {
+		if (cmd.getName().equalsIgnoreCase("viewuuid")) {
+			
+			String name;
+			
+			if (args.length < 1)
+				name = p.getName();
+			else
+				name = args[0];
 			
 			if (map.containsKey(p.getName())) {
 				
 				p.sendMessage(LOGHEAD + "§7Utente admin protetto");
-				p.sendMessage(LOGHEAD + "§7Username: §0" + p.getName());
-				p.sendMessage(LOGHEAD + "§7UUID: §0" + map.get(p.getName()));
+				p.sendMessage(LOGHEAD + "§7Username: §0" + name);
+				p.sendMessage(LOGHEAD + "§7UUID: §0" + map.get(name));
 				
 			} else {
 				
 				p.sendMessage(LOGHEAD + "§7Utente admin non protetto");
-				p.sendMessage(LOGHEAD + "§7Current Username: §0" + p.getName());
+				p.sendMessage(LOGHEAD + "§7Current Username: §0" + name);
 				
-				UUID uuid = p.getUniqueId();
+				UUID uuid = Bukkit.getServer().getPlayer(name).getUniqueId();
 				String uuids = "null";
 				
 				if (uuid != null)
@@ -106,8 +118,20 @@ public class UuidControl extends JavaPlugin implements Listener {
 			}
 		}
 		
-		else if (cmd.getName().equalsIgnoreCase("setuuid"))
-			write(p);
+		else if (cmd.getName().equalsIgnoreCase("setuuid")) {
+			
+			String name;
+			
+			if (args.length < 1)
+				name = p.getName();
+			else
+				name = args[0];
+			
+			Player player = Bukkit.getServer().getPlayer(name);
+			write(player);
+			
+			p.sendMessage(LOGHEAD + "§0UUID utente protetto");
+		}
 		
 		return true;
 	}
