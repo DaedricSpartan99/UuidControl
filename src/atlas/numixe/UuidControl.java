@@ -67,6 +67,8 @@ public class UuidControl extends JavaPlugin implements Listener {
 		getConfig().createSection("players." + p.getName());
 		getConfig().set("players." + p.getName(), uuid.toString());
 		map.put(p.getName(), uuid.toString());
+		
+		saveConfig();
 	}
 	
 	@Override
