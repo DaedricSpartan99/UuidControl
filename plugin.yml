@@ -1,0 +1,11 @@
+name: UuidControl
+version: 1.0
+Author: Numixe & Atlas
+main: atlas.numixe.UuidControl
+commands:
+        setuuid:
+          description: Set an admin as protected on login
+          usage: /setuuid <player name>
+        viewuuid:
+          description: View if a player is protected, else his uuid
+          usage: /viewuuid <player name>
